@@ -20,9 +20,14 @@ import android.animation.*
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.LinearInterpolator
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatImageView
 
 
 class MainActivity : AppCompatActivity() {
@@ -122,6 +127,51 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun shower() {
+        val container = star.parent as ViewGroup
+        val containerWidth = container.width
+        val containerHeight = container.height
+        var starWidth = star.width.toFloat()
+        var starHeight = star.height.toFloat()
+
+        val newStar = AppCompatImageView(this)
+        newStar.setImageResource(R.drawable.ic_star)
+        newStar.layoutParams = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        )
+
+        container.addView(newStar)
+
+        newStar.scaleX = Math.random().toFloat() * 1.5f + 0.1f
+        newStar.scaleY = newStar.scaleX
+        starWidth *= newStar.scaleX
+        starHeight *= newStar.scaleY
+
+        newStar.translationX = Math.random().toFloat() * containerWidth - starWidth / 2
+
+        val mover = ObjectAnimator.ofFloat(
+            newStar, View.TRANSLATION_Y,
+            -starHeight, containerHeight + starHeight
+        ).apply {
+            interpolator = AccelerateInterpolator(1f)
+        }
+
+        val rotator = ObjectAnimator.ofFloat(
+            newStar, View.ROTATION, (Math.random() * 1080).toFloat()
+        ).apply {
+            interpolator = LinearInterpolator()
+        }
+
+        val animatorSet = AnimatorSet().apply {
+            duration = (Math.random() * 1500 + 500).toLong()
+        }
+        animatorSet.playTogether(mover, rotator)
+        animatorSet.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) {
+                container.removeView(newStar)
+            }
+        })
+        animatorSet.start()
     }
 
     private fun ObjectAnimator.disableViewDuringAnimation(view: View) {
