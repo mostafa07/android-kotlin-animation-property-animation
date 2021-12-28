@@ -17,6 +17,7 @@
 package com.google.samples.propertyanimation
 
 import android.animation.*
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -109,6 +110,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun colorizer() {
+        val animator = ObjectAnimator.ofArgb(
+            star.parent, "backgroundColor",
+            Color.BLACK, Color.RED
+        ).apply {
+            repeatCount = 1
+            repeatMode = ValueAnimator.REVERSE
+        }
+        animator.disableViewDuringAnimation(colorizeButton)
+        animator.start()
     }
 
     private fun shower() {
