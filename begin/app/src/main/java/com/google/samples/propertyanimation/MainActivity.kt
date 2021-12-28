@@ -16,10 +16,12 @@
 
 package com.google.samples.propertyanimation
 
-import androidx.appcompat.app.AppCompatActivity
+import android.animation.*
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import androidx.appcompat.app.AppCompatActivity
 
 
 class MainActivity : AppCompatActivity() {
@@ -70,15 +72,40 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun rotater() {
+        val animator = ObjectAnimator.ofFloat(star, View.ROTATION, -360f, 0f).apply {
+            duration = 2000
+        }
+        animator.disableViewDuringAnimation(rotateButton)
+        animator.start()
     }
 
     private fun translater() {
+        val animator = ObjectAnimator.ofFloat(star, View.TRANSLATION_X, 200f).apply {
+            repeatCount = 1
+            repeatMode = ValueAnimator.REVERSE
+        }
+        animator.disableViewDuringAnimation(translateButton)
+        animator.start()
     }
 
     private fun scaler() {
+        val scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 4f)
+        val scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 4f)
+        val animator = ObjectAnimator.ofPropertyValuesHolder(star, scaleX, scaleY).apply {
+            repeatCount = 1
+            repeatMode = ValueAnimator.REVERSE
+        }
+        animator.disableViewDuringAnimation(scaleButton)
+        animator.start()
     }
 
     private fun fader() {
+        val animator = ObjectAnimator.ofFloat(star, View.ALPHA, 1f, 0f).apply {
+            repeatCount = 1
+            repeatMode = ValueAnimator.REVERSE
+        }
+        animator.disableViewDuringAnimation(fadeButton)
+        animator.start()
     }
 
     private fun colorizer() {
@@ -87,4 +114,15 @@ class MainActivity : AppCompatActivity() {
     private fun shower() {
     }
 
+    private fun ObjectAnimator.disableViewDuringAnimation(view: View) {
+        addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationStart(animation: Animator?) {
+                view.isEnabled = false
+            }
+
+            override fun onAnimationEnd(animation: Animator?) {
+                view.isEnabled = true
+            }
+        })
+    }
 }
